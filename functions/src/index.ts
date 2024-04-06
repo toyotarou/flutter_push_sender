@@ -2,6 +2,9 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 admin.initializeApp();
 
+const db = admin.firestore();
+let now = new Date();
+
 // サーバーの場所を定義
 const REGION = "asia-northeast1";
 
@@ -20,6 +23,13 @@ export const sendPushNotificationTopicCustom =
         // グループに属している端末全てに通知を送信します。
 
         const messaging = admin.messaging();
+
+        await db.collection("pushHistory").add({
+            title: pushMessageMap["title"],
+            body: pushMessageMap["body"],
+            date: now.toLocaleString('ja-JP', {timeZone: 'Asia/Tokyo'}),
+        });
+
         const res = await messaging
             .send({
               notification: {title: pushMessageMap["title"],
